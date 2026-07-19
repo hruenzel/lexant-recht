@@ -4,280 +4,846 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Lexant – Wortschatz, der hängen bleibt</title>
-<meta name="description" content="Lexant macht Wortschatztraining zum Spiel: kluge Wiederholung, tägliche Missionen, Ligen und echte Duelle. Bald im App Store.">
+<meta name="description" content="Lexant macht deinen deutschen Wortschatz messbar besser: kluge Wiederholung, tägliche Missionen, Ligen und echte Duelle. Bald im App Store.">
 <meta name="robots" content="noindex, nofollow">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%2317203A'/><text x='32' y='45' font-family='Georgia,serif' font-size='38' font-weight='bold' text-anchor='middle' fill='%2334C98E'>L</text></svg>">
-<style>:root {
-  --bg: #0E1424; --tile: #17203A; --text: #EFF2FA;
-  --sub: #AAB3C7; --muted: #8E97AD; --akzent: #34C98E; --linie: #232D47;
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%2317203A'/><text x='32' y='46' font-family='Georgia,serif' font-size='40' font-weight='600' text-anchor='middle' fill='%2334C98E'>L</text></svg>">
+<link rel="preload" href="fonts/fraunces-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>@font-face {
+  font-family: 'Fraunces';
+  src: url('fonts/fraunces-latin.woff2') format('woff2');
+  font-weight: 400 700; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('fonts/inter-latin.woff2') format('woff2');
+  font-weight: 400 800; font-style: normal; font-display: swap;
+}
+
+:root {
+  --bg: #0E1424; --tile: #17203A; --tile2: #1C2745; --text: #EFF2FA;
+  --sub: #AAB3C7; --muted: #8E97AD; --linie: #232D47;
+  --akzent: #34C98E; --akzent-tief: #06281B;
   --indigo: #4152D8; --indigo-tief: #283079;
+  --cyan: #35C7E8; --violett: #8F7CF0; --lila: #A855F7;
+  --rot: #F2555A; --amber: #E7B23C; --orange: #FF8A4C;
+  --serif: 'Fraunces', Georgia, serif;
+  --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 @media (prefers-color-scheme: light) {
   :root {
-    --bg: #EEF2F9; --tile: #FFFFFF; --text: #14203A;
-    --sub: #46516B; --muted: #7A85A0; --akzent: #1DA873; --linie: #DFE5F0;
+    --bg: #EEF2F9; --tile: #FFFFFF; --tile2: #F6F8FC; --text: #14203A;
+    --sub: #46516B; --muted: #7A85A0; --linie: #DFE5F0;
+    --akzent: #1DA873; --cyan: #0FA7CC; --violett: #7159E8;
+    --lila: #9333EA; --rot: #D93A40; --amber: #C8901B; --orange: #E86F2E;
   }
 }
-* { box-sizing: border-box; }
+
+* { box-sizing: border-box; margin: 0; }
 html { scroll-behavior: smooth; }
 body {
-  margin: 0; background: var(--bg); color: var(--sub);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 16.5px; line-height: 1.65;
+  background: var(--bg); color: var(--sub);
+  font-family: var(--sans); font-size: 16.5px; line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
 }
 a { color: var(--akzent); }
+.innen { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+h1, h2 { font-family: var(--serif); font-weight: 550; color: var(--text); }
+h1 { font-size: clamp(40px, 6vw, 64px); line-height: 1.06; letter-spacing: -1px; }
+h2 { font-size: clamp(28px, 4vw, 40px); line-height: 1.15; letter-spacing: -0.5px; }
+.kicker {
+  font-size: 12.5px; font-weight: 800; letter-spacing: 2.2px;
+  text-transform: uppercase; color: var(--akzent); margin-bottom: 12px;
+}
+.lead { font-size: clamp(17px, 2vw, 19px); }
+
+/* ---------- Navigation ---------- */
+nav {
+  position: fixed; inset: 0 0 auto 0; z-index: 50;
+  transition: background 0.3s, box-shadow 0.3s;
+}
+nav .innen {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: 14px; padding-bottom: 14px;
+}
+nav.fest {
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  box-shadow: 0 1px 0 var(--linie);
+}
+.marke {
+  font-family: var(--serif); font-size: 23px; font-weight: 600;
+  color: #fff; text-decoration: none; letter-spacing: -0.3px;
+}
+.marke b { color: #7CF0C9; }
+nav.fest .marke { color: var(--text); }
+nav.fest .marke b { color: var(--akzent); }
+.nav-links { display: flex; gap: 26px; }
+.nav-links a {
+  color: rgba(255,255,255,0.85); text-decoration: none;
+  font-size: 14.5px; font-weight: 600;
+}
+nav.fest .nav-links a { color: var(--sub); }
+.nav-links a:hover { color: var(--akzent); }
+.nav-cta {
+  background: var(--akzent); color: var(--akzent-tief) !important;
+  font-size: 14px; font-weight: 700; text-decoration: none;
+  padding: 9px 18px; border-radius: 999px;
+}
+.nav-cta:hover { filter: brightness(1.08); }
+@media (max-width: 720px) { .nav-links { display: none; } }
 
 /* ---------- Hero ---------- */
 .hero {
-  /* Endet bewusst im Indigo (nicht in --bg): So bleibt der weiße
-     Hero-Text in beiden Farbschemata lesbar und es gibt keine
-     Verlaufs-Kante am Sektionsübergang. */
+  position: relative; overflow: hidden;
   background: linear-gradient(180deg, var(--indigo) 0%, var(--indigo-tief) 100%);
-  color: #EFF2FA; padding: 0 20px 88px;
+  color: rgba(255,255,255,0.87);
   border-radius: 0 0 28px 28px;
+  padding: 130px 0 96px;
 }
-.hero-innen { max-width: 1000px; margin: 0 auto; }
-nav {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 22px 0 0;
+.hero::before {
+  /* Grain für Tiefe – reines Inline-SVG, kein Request */
+  content: ""; position: absolute; inset: 0; opacity: 0.35; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
 }
-.marke { font-size: 21px; font-weight: 800; letter-spacing: -0.4px;
-  color: #fff; text-decoration: none; }
-.marke b { color: #7CF0C9; font-weight: 800; }
-nav .links a {
-  color: rgba(255,255,255,0.82); text-decoration: none;
-  font-size: 14.5px; font-weight: 600; margin-left: 22px;
+.hero .innen {
+  position: relative; display: grid; align-items: center;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); gap: 48px;
 }
-nav .links a:hover { color: #fff; }
-.hero-inhalt { padding-top: 76px; max-width: 640px; }
-.badge {
+.eyebrow {
   display: inline-block; font-size: 12.5px; font-weight: 700;
-  letter-spacing: 1.4px; text-transform: uppercase;
-  background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.25);
-  border-radius: 999px; padding: 7px 14px; margin-bottom: 22px;
+  letter-spacing: 1.6px; text-transform: uppercase;
+  background: rgba(255,255,255,0.13); border: 1px solid rgba(255,255,255,0.24);
+  border-radius: 999px; padding: 7px 15px; margin-bottom: 24px;
 }
-h1 {
-  color: #fff; font-size: clamp(36px, 6.5vw, 58px); line-height: 1.08;
-  letter-spacing: -1.2px; margin: 0 0 18px;
-}
-.hero-sub { font-size: 18.5px; line-height: 1.6; color: rgba(255,255,255,0.86);
-  margin: 0 0 34px; }
-.cta-reihe { display: flex; flex-wrap: wrap; gap: 12px; }
+.hero h1 { color: #fff; margin-bottom: 20px; }
+.hero .lead { color: rgba(255,255,255,0.85); max-width: 480px; margin-bottom: 32px; }
+.cta-reihe { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
 .cta {
   display: inline-block; text-decoration: none; font-weight: 700;
-  font-size: 16px; border-radius: 14px; padding: 14px 26px;
+  font-size: 16px; border-radius: 14px; padding: 15px 28px;
+  transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
 }
-.cta-voll { background: #34C98E; color: #06281B; }
-.cta-voll:hover { background: #3FDCA0; }
+.cta-voll {
+  background: var(--akzent); color: var(--akzent-tief);
+  box-shadow: 0 8px 24px -8px rgba(52,201,142,0.55);
+}
+.cta-voll:hover { transform: translateY(-1px); filter: brightness(1.06); }
 .cta-zart { color: #fff; border: 1.5px solid rgba(255,255,255,0.4); }
 .cta-zart:hover { border-color: #fff; }
+.trust {
+  margin-top: 26px; font-size: 13.5px; color: rgba(255,255,255,0.62);
+  letter-spacing: 0.2px;
+}
+
+/* ---------- Telefon-Replika ---------- */
+.buehne { position: relative; display: flex; justify-content: center; }
+.buehne::before, .buehne::after {
+  content: ""; position: absolute; border-radius: 50%;
+  filter: blur(70px); pointer-events: none;
+}
+.buehne::before {
+  width: 340px; height: 340px; background: rgba(53,199,232,0.35);
+  top: -30px; left: 6%;
+}
+.buehne::after {
+  width: 300px; height: 300px; background: rgba(168,85,247,0.3);
+  bottom: -30px; right: 4%;
+}
+.telefon {
+  position: relative; z-index: 1; width: 296px;
+  background: #0E1424; border: 9px solid #060A15;
+  border-radius: 46px; padding: 14px 15px 0; overflow: hidden;
+  height: 596px; box-shadow: 0 40px 80px -30px rgba(0,0,0,0.6);
+  transform: rotate(-4deg);
+  animation: schweben 7s ease-in-out infinite;
+  font-size: 12px; color: #AAB3C7; line-height: 1.4;
+}
+@keyframes schweben {
+  0%, 100% { transform: rotate(-4deg) translateY(0); }
+  50% { transform: rotate(-4deg) translateY(-10px); }
+}
+.insel {
+  width: 84px; height: 24px; background: #060A15;
+  border-radius: 999px; margin: 0 auto 14px;
+}
+.p-gruss { color: #8E97AD; font-size: 11.5px; }
+.p-titel { color: #35C7E8; font-size: 16.5px; font-weight: 800; letter-spacing: -0.2px; }
+.p-kopf { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.p-rund {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+.p-rund svg { width: 15px; height: 15px; }
+.p-chips { display: flex; gap: 9px; margin-bottom: 16px; }
+.p-chip {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  gap: 5px; padding: 8px 6px; border-radius: 13px;
+  font-weight: 700; font-size: 12px;
+}
+.p-chip svg { width: 14px; height: 14px; }
+.p-muenzen { background: rgba(255,193,7,0.15); border: 1px solid rgba(255,193,7,0.5); color: #FFC107; }
+.p-streak { background: rgba(255,152,0,0.15); border: 1px solid rgba(255,152,0,0.5); color: #FF9800; }
+.p-flamme { animation: flackern 2.4s ease-in-out infinite; transform-origin: 50% 85%; }
+@keyframes flackern {
+  0%, 100% { transform: scale(1); } 40% { transform: scale(1.12) rotate(-3deg); }
+  70% { transform: scale(0.96) rotate(2deg); }
+}
+.p-label { color: #626C84; font-size: 9px; font-weight: 800; letter-spacing: 1.8px; margin-bottom: 8px; }
+.p-karte {
+  background: #17203A; border: 1px solid #232D47; border-radius: 15px;
+  padding: 12px 13px; margin-bottom: 12px;
+}
+.p-kicker { color: #35C7E8; font-size: 8px; font-weight: 800; letter-spacing: 1.8px; margin-bottom: 6px; }
+.p-wort-zeile { display: flex; align-items: center; gap: 7px; margin-bottom: 5px; }
+.p-wort { color: #EFF2FA; font-size: 19px; font-weight: 800; letter-spacing: -0.4px; }
+.p-tag {
+  background: #35C7E8; color: #0E1424; font-size: 7.5px; font-weight: 800;
+  letter-spacing: 0.8px; border-radius: 5px; padding: 2px 6px;
+}
+.p-def { color: #AAB3C7; font-size: 9.5px; line-height: 1.45; }
+.p-zeile { display: flex; align-items: center; gap: 9px; padding: 10px 12px; }
+.p-zeile + .p-zeile { border-top: 1px solid #232D47; }
+.p-icon {
+  width: 30px; height: 30px; border-radius: 10px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.p-icon svg { width: 14px; height: 14px; }
+.p-zt { color: #EFF2FA; font-size: 11px; font-weight: 700; }
+.p-zs { color: #8E97AD; font-size: 9px; }
+.p-neu {
+  margin-left: auto; background: #F2555A; color: #0E1424;
+  font-size: 7.5px; font-weight: 800; letter-spacing: 0.5px;
+  border-radius: 999px; padding: 2.5px 7px;
+}
+.p-chevron { margin-left: auto; color: #626C84; }
+.p-spiele { display: flex; gap: 9px; }
+.p-tile {
+  flex: 1; height: 64px; border-radius: 15px 15px 0 0; padding: 10px;
+  font-size: 9.5px; font-weight: 700; color: #EFF2FA;
+}
+.p-tile svg { width: 14px; height: 14px; display: block; margin-bottom: 5px; }
 
 /* ---------- Sektionen ---------- */
-main { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
-section { padding: 64px 0 8px; scroll-margin-top: 24px; }
-.kicker {
-  color: var(--akzent); font-size: 12.5px; font-weight: 800;
-  letter-spacing: 2px; text-transform: uppercase; margin: 0 0 8px;
-}
-h2 {
-  color: var(--text); font-size: clamp(26px, 4vw, 34px);
-  letter-spacing: -0.6px; margin: 0 0 10px; line-height: 1.2;
-}
-.sektion-sub { max-width: 620px; margin: 0 0 32px; }
+section { padding: 104px 0 0; scroll-margin-top: 56px; }
+.sektion-kopf { max-width: 640px; margin-bottom: 40px; }
+.sektion-kopf .lead { margin-top: 14px; }
 
-/* Modi-Karten */
-.modi-raster {
+/* Scroll-Reveal: ohne JS bleibt alles sichtbar */
+.js .zeigen { opacity: 0; transform: translateY(18px);
+  transition: opacity 0.6s ease, transform 0.6s ease; }
+.js .zeigen.da { opacity: 1; transform: none; }
+
+/* ---------- Quiz ---------- */
+.quiz-karte {
+  max-width: 620px; background: var(--tile);
+  border: 1px solid var(--linie); border-radius: 22px; padding: 28px;
+}
+.quiz-meta {
+  display: flex; justify-content: space-between; font-size: 12px;
+  font-weight: 800; letter-spacing: 1.6px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 14px;
+}
+.quiz-balken { height: 5px; background: var(--linie); border-radius: 99px;
+  overflow: hidden; margin-bottom: 26px; }
+.quiz-balken div {
+  height: 100%; width: 0; background: var(--akzent);
+  border-radius: 99px; transition: width 0.4s ease;
+}
+.quiz-wortzeile { display: flex; align-items: baseline; gap: 12px;
+  flex-wrap: wrap; margin-bottom: 6px; }
+.quiz-wort { font-family: var(--serif); font-weight: 600;
+  font-size: clamp(30px, 5vw, 40px); color: var(--text); letter-spacing: -0.5px; }
+.quiz-tagpill {
+  background: color-mix(in srgb, var(--cyan) 16%, transparent);
+  color: var(--cyan); font-size: 10.5px; font-weight: 800;
+  letter-spacing: 1.2px; border-radius: 6px; padding: 3px 8px;
+}
+.quiz-frage { margin-bottom: 20px; font-size: 15px; }
+.quiz-antworten { display: grid; gap: 10px; }
+.quiz-antworten button {
+  font: inherit; font-size: 14.5px; text-align: left; cursor: pointer;
+  color: var(--text); background: var(--tile2);
+  border: 1.5px solid var(--linie); border-radius: 14px;
+  padding: 13px 16px; line-height: 1.5; transition: border 0.15s, background 0.15s;
+}
+.quiz-antworten button:hover:not(:disabled) { border-color: var(--akzent); }
+.quiz-antworten button:disabled { cursor: default; }
+.quiz-antworten button.richtig {
+  border-color: var(--akzent);
+  background: color-mix(in srgb, var(--akzent) 14%, var(--tile2));
+  animation: puls 0.4s ease;
+}
+.quiz-antworten button.falsch {
+  border-color: var(--rot);
+  background: color-mix(in srgb, var(--rot) 12%, var(--tile2));
+}
+.quiz-antworten button.blass { opacity: 0.45; }
+@keyframes puls { 50% { transform: scale(1.015); } }
+.quiz-beispiel {
+  display: none; margin-top: 18px; padding: 12px 16px;
+  border-left: 3px solid var(--akzent); background: var(--tile2);
+  border-radius: 0 12px 12px 0; font-size: 14px; font-style: italic;
+}
+.quiz-beispiel b { color: var(--text); font-style: normal; }
+.quiz-weiter {
+  display: none; margin-top: 18px; font: inherit; font-weight: 700;
+  font-size: 15px; cursor: pointer; color: var(--akzent-tief);
+  background: var(--akzent); border: 0; border-radius: 12px; padding: 12px 24px;
+}
+.quiz-ende { display: none; text-align: center; padding: 18px 0 6px; }
+.quiz-ende .gross {
+  font-family: var(--serif); font-size: 56px; font-weight: 600;
+  color: var(--text); line-height: 1;
+}
+.quiz-ende .urteil { color: var(--text); font-weight: 700; font-size: 18px;
+  margin: 12px 0 6px; }
+.quiz-ende p { max-width: 380px; margin: 0 auto 22px; font-size: 15px; }
+.quiz-nochmal {
+  font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+  color: var(--sub); background: none; border: 0;
+  margin-left: 16px; text-decoration: underline;
+}
+
+/* ---------- Bento (Spielmodi) ---------- */
+.bento {
   display: grid; gap: 14px;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-areas: "liga liga duell duell" "b1 b2 b3 b4";
 }
-.modus {
+.bento > * {
   background: var(--tile); border: 1px solid var(--linie);
-  border-radius: 18px; padding: 22px;
-  border-top: 3px solid var(--mf);
+  border-radius: 20px; padding: 24px;
+  transition: transform 0.2s, border-color 0.2s;
 }
-.modus .chip {
-  width: 46px; height: 46px; border-radius: 13px;
-  background: var(--mfw); color: var(--mf);
+.bento > *:hover { transform: translateY(-3px); }
+.b-liga { grid-area: liga; border-top: 3px solid var(--cyan); }
+.b-liga:hover { border-color: color-mix(in srgb, var(--cyan) 45%, var(--linie)); border-top-color: var(--cyan); }
+.b-duell { grid-area: duell; border-top: 3px solid var(--indigo); }
+.b-duell:hover { border-color: color-mix(in srgb, var(--indigo) 45%, var(--linie)); border-top-color: var(--indigo); }
+.bento h3 { color: var(--text); font-size: 18px; margin-bottom: 6px; letter-spacing: -0.2px; }
+.bento p { font-size: 14.5px; line-height: 1.55; }
+.b-klein { border-top: 3px solid var(--mf); }
+.b-klein:hover { border-color: color-mix(in srgb, var(--mf) 45%, var(--linie)); border-top-color: var(--mf); }
+.b-chip {
+  width: 42px; height: 42px; border-radius: 12px; margin-bottom: 14px;
+  background: color-mix(in srgb, var(--mf) 14%, transparent); color: var(--mf);
   display: flex; align-items: center; justify-content: center;
-  margin-bottom: 14px;
 }
-.modus .chip svg { width: 24px; height: 24px; }
-.modus h3 { color: var(--text); font-size: 17.5px; margin: 0 0 6px; }
-.modus p { font-size: 14.5px; line-height: 1.55; margin: 0; }
+.b-chip svg { width: 21px; height: 21px; }
+.mini { border-radius: 14px; background: var(--tile2);
+  border: 1px solid var(--linie); padding: 14px; margin-bottom: 18px; }
+.liga-zeile { display: flex; align-items: center; gap: 10px;
+  padding: 7px 8px; border-radius: 10px; font-size: 12.5px; font-weight: 600;
+  color: var(--sub); }
+.liga-zeile.ich {
+  background: color-mix(in srgb, var(--cyan) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--cyan) 40%, transparent);
+  color: var(--text);
+}
+.liga-avatar { width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10.5px; font-weight: 800; color: #fff; }
+.liga-troph { margin-left: auto; font-weight: 700; font-size: 12px;
+  color: var(--amber); }
+.duell-mini { display: flex; align-items: center; justify-content: center;
+  gap: 18px; padding: 18px 8px; }
+.duell-avatar { width: 46px; height: 46px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; font-weight: 800; color: #fff; }
+.duell-stand { font-family: var(--serif); font-size: 30px; font-weight: 600;
+  color: var(--text); letter-spacing: 1px; }
+.duell-vs { font-size: 10px; font-weight: 800; letter-spacing: 1.5px;
+  color: var(--muted); text-align: center; margin-top: 3px; }
+@media (max-width: 860px) {
+  .bento { grid-template-columns: 1fr 1fr;
+    grid-template-areas: "liga liga" "duell duell" "b1 b2" "b3 b4"; }
+}
+@media (max-width: 540px) {
+  .bento { grid-template-columns: 1fr;
+    grid-template-areas: "liga" "duell" "b1" "b2" "b3" "b4"; }
+}
 
-/* So funktioniert's */
+/* ---------- Methode ---------- */
 .schritte { display: grid; gap: 14px;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
-.schritt {
-  background: var(--tile); border: 1px solid var(--linie);
-  border-radius: 18px; padding: 22px;
-}
-.schritt .nr {
-  width: 38px; height: 38px; border-radius: 999px;
-  background: var(--indigo); color: #fff; font-weight: 800;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px; margin-bottom: 14px;
-}
-.schritt h3 { color: var(--text); font-size: 17px; margin: 0 0 6px; }
-.schritt p { font-size: 14.5px; line-height: 1.55; margin: 0; }
+  grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.schritt { background: var(--tile); border: 1px solid var(--linie);
+  border-radius: 20px; padding: 24px; }
+.schritt h3 { color: var(--text); font-size: 17px; margin-bottom: 8px; }
+.schritt p { font-size: 14.5px; line-height: 1.55; }
+.schritt .mini { display: flex; align-items: center; justify-content: center;
+  gap: 8px; height: 84px; }
+.leitner-box { border: 1.5px solid var(--linie); border-radius: 8px;
+  background: var(--tile); color: var(--muted);
+  font-size: 9px; font-weight: 700; letter-spacing: 0.3px;
+  display: flex; align-items: flex-end; justify-content: center;
+  padding-bottom: 4px; }
+.leitner-box.voll { border-color: var(--violett);
+  background: color-mix(in srgb, var(--violett) 12%, transparent);
+  color: var(--violett); }
+.woche-tag { width: 26px; height: 26px; border-radius: 50%;
+  border: 1.5px solid var(--linie); color: var(--muted);
+  font-size: 10px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; }
+.woche-tag.brennt { border-color: var(--orange);
+  background: color-mix(in srgb, var(--orange) 15%, transparent);
+  color: var(--orange); }
+.woche-tag.heute svg { width: 14px; height: 14px; }
+.kurve-balken { width: 16px; border-radius: 5px 5px 0 0;
+  background: color-mix(in srgb, var(--cyan) 30%, transparent);
+  align-self: flex-end; }
+.kurve-balken.hoch { background: var(--cyan); }
+@media (max-width: 860px) { .schritte { grid-template-columns: 1fr; } }
 
-/* FAQ */
-details {
-  background: var(--tile); border: 1px solid var(--linie);
-  border-radius: 14px; margin-bottom: 10px;
-}
+/* ---------- FAQ ---------- */
+.faq-liste { max-width: 720px; }
+details { border-bottom: 1px solid var(--linie); }
 summary {
-  list-style: none; cursor: pointer; padding: 16px 20px;
-  color: var(--text); font-weight: 600; font-size: 15.5px;
-  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  list-style: none; cursor: pointer; padding: 20px 4px;
+  color: var(--text); font-weight: 650; font-size: 16.5px;
+  display: flex; justify-content: space-between; align-items: center; gap: 16px;
 }
 summary::-webkit-details-marker { display: none; }
-summary::after { content: "+"; color: var(--akzent); font-size: 22px;
-  font-weight: 400; line-height: 1; flex-shrink: 0; }
-details[open] summary::after { content: "–"; }
-.faq-text { margin: 0; padding: 0 20px 16px; font-size: 14.5px; }
-
-/* Beta */
-.beta-karte {
-  background: linear-gradient(150deg, var(--indigo), var(--indigo-tief));
-  border-radius: 22px; padding: 40px clamp(22px, 5vw, 48px);
-  color: rgba(255,255,255,0.88); margin-top: 6px;
+summary::after {
+  content: "+"; color: var(--akzent); font-size: 24px; font-weight: 300;
+  line-height: 1; flex-shrink: 0; transition: transform 0.25s;
 }
-.beta-karte h2 { color: #fff; }
-.beta-karte p { max-width: 560px; }
-.beta-karte .cta-voll { margin-top: 10px; }
+details[open] summary::after { transform: rotate(45deg); }
+.faq-text { padding: 0 4px 20px; font-size: 15px; max-width: 620px; }
 
-/* Footer */
-footer {
-  max-width: 1000px; margin: 72px auto 0; padding: 26px 20px 48px;
-  border-top: 1px solid var(--linie); font-size: 13.5px; color: var(--muted);
-  display: flex; flex-wrap: wrap; gap: 8px 22px; align-items: center;
+/* ---------- Finale ---------- */
+.finale {
+  position: relative; overflow: hidden; text-align: center;
+  background: linear-gradient(160deg, var(--indigo), var(--indigo-tief));
+  border-radius: 28px; padding: 72px clamp(24px, 6vw, 64px);
+  color: rgba(255,255,255,0.85);
 }
-footer a { color: var(--muted); }
-footer a:hover { color: var(--akzent); }
+.finale::before {
+  content: ""; position: absolute; inset: 0; opacity: 0.35; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.finale > * { position: relative; }
+.finale .kicker { color: #7CF0C9; }
+.finale h2 { color: #fff; margin-bottom: 14px; }
+.finale p { max-width: 480px; margin: 0 auto 30px; }
+
+/* ---------- Footer ---------- */
+footer { padding: 64px 0 48px; }
+.fuss-oben { display: flex; align-items: baseline; gap: 14px;
+  flex-wrap: wrap; padding-bottom: 22px; }
+.fuss-marke { font-family: var(--serif); font-size: 22px; font-weight: 600;
+  color: var(--text); }
+.fuss-claim { font-size: 14px; }
+.fuss-unten {
+  border-top: 1px solid var(--linie); padding-top: 22px;
+  display: flex; flex-wrap: wrap; gap: 10px 24px; align-items: center;
+  font-size: 13.5px; color: var(--muted);
+}
+.fuss-unten a { color: var(--muted); text-decoration: none; }
+.fuss-unten a:hover { color: var(--akzent); }
+
+/* ---------- Responsiv & Motion ---------- */
+@media (max-width: 860px) {
+  .hero { padding: 108px 0 72px; }
+  .hero .innen { grid-template-columns: 1fr; gap: 56px; }
+  .telefon { transform: rotate(0deg); height: 540px; width: 272px; }
+  @keyframes schweben {
+    0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); }
+  }
+  section { padding-top: 72px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .telefon, .p-flamme { animation: none; }
+  .js .zeigen { opacity: 1; transform: none; transition: none; }
+  .bento > *:hover, .cta-voll:hover { transform: none; }
+}
 </style>
 </head>
 <body>
-<header class="hero">
-<div class="hero-innen">
+
 <nav>
+<div class="innen">
 <a class="marke" href="index.html">Lexant<b>.</b></a>
-<span class="links">
+<div class="nav-links">
+<a href="#quiz">Ausprobieren</a>
 <a href="#modi">Spielmodi</a>
 <a href="#methode">Methode</a>
 <a href="#faq">FAQ</a>
-</span>
+</div>
+<a class="nav-cta" href="mailto:support@lexant.de?subject=Beta-Test%20Lexant">Beta-Platz sichern</a>
+</div>
 </nav>
-<div class="hero-inhalt">
-<span class="badge">Bald im App Store &middot; iOS zuerst</span>
-<h1>Wortschatz, der hängen bleibt.</h1>
-<p class="hero-sub">Lexant macht dein Deutsch messbar besser: kluge
-Wiederholung, tägliche Missionen und echte Duelle – in einer App, die
-sich wie ein Spiel anfühlt.</p>
+
+<header class="hero">
+<div class="innen">
+<div>
+<span class="eyebrow">Die Wortschatz-App für Deutsch</span>
+<h1>Wortschatz, der hängen&nbsp;bleibt.</h1>
+<p class="lead">Lexant verbindet Lernwissenschaft mit echtem
+Spielgefühl: tägliche Missionen, Ligen und Duelle, die deinen
+Wortschatz messbar wachsen lassen.</p>
 <div class="cta-reihe">
-<a class="cta cta-voll" href="#beta">Beta-Tester werden</a>
-<a class="cta cta-zart" href="#modi">Was steckt drin?</a>
+<a class="cta cta-voll" href="mailto:support@lexant.de?subject=Beta-Test%20Lexant">Beta-Platz sichern</a>
+<a class="cta cta-zart" href="#quiz">Erst mal ausprobieren&nbsp;↓</a>
+</div>
+<p class="trust">Kostenlos &middot; Ohne Konto-Zwang &middot; iOS zuerst</p>
+</div>
+<div class="buehne zeigen">
+<div class="telefon" role="img" aria-label="Der Home-Screen der Lexant-App">
+<div class="insel"></div>
+<div class="p-kopf">
+<div>
+<div class="p-gruss">Hallo Alex,</div>
+<div class="p-titel">Bereit fürs Training?</div>
+</div>
+<div style="display:flex;gap:7px">
+<div class="p-rund" style="background:rgba(255,193,7,0.15);border:1px solid rgba(255,193,7,0.5);color:#FFC107"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.7 5.6 6.1.8-4.5 4.2 1.1 6-5.4-2.9L6.6 19.6l1.1-6L3.2 9.4l6.1-.8z"/></svg></div>
+<div class="p-rund" style="background:rgba(52,201,142,0.15);border:1px solid rgba(52,201,142,0.5);color:#34C98E"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></div>
+</div>
+</div>
+<div class="p-chips">
+<div class="p-chip p-muenzen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/></svg> 1.250 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 8.5v7M8.5 12h7"/></svg></div>
+<div class="p-chip p-streak"><span class="p-flamme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c1 3-3 4.5-3 8a3 3 0 0 0 6 .5C16.5 13 18 11 17 8c2 1.5 3.5 4 3.5 7A8.5 8.5 0 0 1 12 21a8 8 0 0 1-8-6c0-4 3-5.5 4-8 .8 1.3 1.6 2 2.6 2.6C10.2 7.6 11 5.5 12 3z"/></svg></span> 12 Tage</div>
+</div>
+<div class="p-label">FÜR HEUTE</div>
+<div class="p-karte">
+<div class="p-kicker">WORT DES TAGES</div>
+<div class="p-wort-zeile">
+<span class="p-wort">Akribie</span>
+<span class="p-tag">SUBSTANTIV</span>
+<span style="margin-left:auto;color:#35C7E8;width:15px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9zM16.5 8.5a5 5 0 0 1 0 7"/></svg></span>
+</div>
+<div class="p-def">Genaue und sorgfältige Arbeitsweise, die auf höchste Präzision und Detailtreue achtet.</div>
+</div>
+<div class="p-karte" style="padding:0">
+<div class="p-zeile">
+<div class="p-icon" style="background:rgba(242,85,90,0.14);color:#F2555A"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4M9 15.5l2 2 4-4"/></svg></div>
+<div><div class="p-zt">Tägliche Mission</div>
+<div class="p-zs">10 Wörter · Bonus-Belohnung</div></div>
+<span class="p-neu">NEU</span>
+</div>
+<div class="p-zeile">
+<div class="p-icon" style="background:rgba(52,201,142,0.14);color:#34C98E"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v4h-4"/></svg></div>
+<div><div class="p-zt">Wiederholen</div>
+<div class="p-zs">3 Wörter fällig</div></div>
+<span class="p-chevron" style="width:16px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
+</div>
+</div>
+<div class="p-label">SPIELE</div>
+<div class="p-spiele">
+<div class="p-tile" style="background:linear-gradient(150deg,#4152D8,#283079)"><span style="color:#8fd8ff"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 5H5a3 3 0 0 0 3 5M16 5h3a3 3 0 0 1-3 5"/><path d="M12 13v4M8 21h8M10 17h4"/></svg></span>Liga der Denker</div>
+<div class="p-tile" style="background:linear-gradient(150deg,#7c3aed,#4c1d95)"><span style="color:#d8b4fe"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L5 13h6l-1 9 8-11h-6z"/></svg></span>Arcade</div>
+</div>
 </div>
 </div>
 </div>
 </header>
 
 <main>
-<section id="modi">
-<p class="kicker">Spielmodi</p>
-<h2>Sechs Wege, klüger zu werden</h2>
-<p class="sektion-sub">Egal ob zwei Minuten oder eine halbe Stunde:
-Für jede Stimmung gibt es den passenden Modus.</p>
-<div class="modi-raster">
-<article class="modus" style="--mf:#F2555A;--mfw:#F2555A26">
-<div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4M9 15.5l2 2 4-4"/></svg></div>
-<h3>Tägliche Mission</h3>
-<p>Zehn Fragen am Tag halten deinen Wortschatz wach – kurz genug für die Bahnfahrt, stark genug für echten Fortschritt.</p>
-</article>
-<article class="modus" style="--mf:#35C7E8;--mfw:#35C7E826">
-<div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 5H5a3 3 0 0 0 3 5M16 5h3a3 3 0 0 1-3 5"/><path d="M12 13v4M8 21h8M10 17h4"/></svg></div>
-<h3>Liga der Denker</h3>
-<p>Sammle Trophäen und steig durch die monatliche Liga auf. Am Saisonende wird abgerechnet – dann beginnt die Jagd von vorn.</p>
-</article>
-<article class="modus" style="--mf:#4152D8;--mfw:#4152D826">
-<div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3l13 13M19 3L6 16M4 16l4 4M20 16l-4 4"/></svg></div>
-<h3>Wort-Duelle</h3>
-<p>Fordere Freunde heraus oder finde per Zufallsgegner einen echten Mitspieler – rundenbasiert, spannend bis zur letzten Frage.</p>
-</article>
-<article class="modus" style="--mf:#E7B23C;--mfw:#E7B23C26">
-<div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3v6l-5.4 9a2 2 0 0 0 1.7 3h11.4a2 2 0 0 0 1.7-3L14 9V3"/><path d="M8.5 3h7M7.5 15h9"/></svg></div>
-<h3>Wort-Labor</h3>
-<p>Fakt oder Fiktion? Wort-Detektiv? Hier entdeckst du spielerisch, woher Wörter wirklich kommen.</p>
-</article>
-<article class="modus" style="--mf:#A855F7;--mfw:#A855F726">
-<div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L5 13h6l-1 9 8-11h-6z"/></svg></div>
-<h3>Arcade</h3>
-<p>Schnelle Runden gegen die Uhr – perfekt, wenn du nur zwei Minuten hast und trotzdem gewinnen willst.</p>
-</article>
-<article class="modus" style="--mf:#8F7CF0;--mfw:#8F7CF026">
-<div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4M5 4h12l-3 4 3 4H5"/></svg></div>
-<h3>Rangpfad</h3>
-<p>Vom Einsteiger zum Wortmeister: Jeder Meilenstein bringt Belohnungen und zeigt, wie weit du gekommen bist.</p>
-</article>
+<section id="quiz">
+<div class="innen">
+<div class="sektion-kopf zeigen">
+<p class="kicker">Ausprobieren</p>
+<h2>Wie gut ist dein Wortschatz wirklich?</h2>
+<p class="lead">Fünf Fragen, direkt aus der App. Ohne Anmeldung.</p>
+</div>
+<div class="quiz-karte zeigen">
+<div id="quiz-lauf">
+<div class="quiz-meta"><span id="quiz-schritt">Frage 1 von 5</span><span id="quiz-punkte">0 Punkte</span></div>
+<div class="quiz-balken"><div id="quiz-balken"></div></div>
+<div class="quiz-wortzeile"><span class="quiz-wort" id="quiz-wort"></span><span class="quiz-tagpill" id="quiz-art"></span></div>
+<p class="quiz-frage">Was bedeutet dieses Wort?</p>
+<div class="quiz-antworten" id="quiz-antworten"></div>
+<div class="quiz-beispiel" id="quiz-beispiel"></div>
+<button class="quiz-weiter" id="quiz-weiter" type="button">Weiter</button>
+</div>
+<div class="quiz-ende" id="quiz-ende">
+<div class="gross" id="quiz-stand">0/5</div>
+<div class="urteil" id="quiz-urteil"></div>
+<p>In der App warten über 3.000 Wörter auf dich – mit einem
+Wiederholungs-System, das dafür sorgt, dass sie bleiben.</p>
+<a class="cta cta-voll" href="mailto:support@lexant.de?subject=Beta-Test%20Lexant">Beta-Platz sichern</a>
+<button class="quiz-nochmal" id="quiz-nochmal" type="button">Nochmal spielen</button>
+</div>
+</div>
 </div>
 </section>
 
-<!-- Screenshots: Sektion folgt, sobald die App-UI final ist.
-     Geplant: 3 iPhone-Rahmen (Home, Duell, Rangpfad) als <picture>. -->
+<section id="modi">
+<div class="innen">
+<div class="sektion-kopf zeigen">
+<p class="kicker">Spielmodi</p>
+<h2>Eine App. Sechs Arten zu gewinnen.</h2>
+<p class="lead">Egal ob zwei Minuten oder eine halbe Stunde – für jede
+Stimmung gibt es den passenden Modus.</p>
+</div>
+<div class="bento">
+<article class="b-liga zeigen">
+<div class="mini">
+<div class="liga-zeile"><span>1</span><span class="liga-avatar" style="background:linear-gradient(140deg,#35C7E8,#4152D8)">MK</span>Mara K.<span class="liga-troph">🏆 412</span></div>
+<div class="liga-zeile ich"><span>2</span><span class="liga-avatar" style="background:linear-gradient(140deg,#34C98E,#0FA7CC)">DU</span>Du<span class="liga-troph">🏆 398</span></div>
+<div class="liga-zeile"><span>3</span><span class="liga-avatar" style="background:linear-gradient(140deg,#8F7CF0,#A855F7)">JT</span>Jonas T.<span class="liga-troph">🏆 371</span></div>
+</div>
+<h3>Liga der Denker</h3>
+<p>Jeden Monat eine neue Saison. Sammle Trophäen, steig auf, verteidige
+deinen Rang – am Monatsende wird abgerechnet.</p>
+</article>
+<article class="b-duell zeigen">
+<div class="mini">
+<div class="duell-mini">
+<span class="duell-avatar" style="background:linear-gradient(140deg,#34C98E,#0FA7CC)">DU</span>
+<div><div class="duell-stand">3 : 2</div><div class="duell-vs">RUNDE 5 VON 6</div></div>
+<span class="duell-avatar" style="background:linear-gradient(140deg,#F2555A,#A855F7)">LK</span>
+</div>
+</div>
+<h3>Wort-Duelle</h3>
+<p>Fordere Freunde heraus oder lass dir per Zufall einen echten Gegner
+geben. Rundenbasiert – jeder spielt, wann er kann.</p>
+</article>
+<article class="b-klein zeigen" style="grid-area:b1;--mf:var(--rot)">
+<div class="b-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4M9 15.5l2 2 4-4"/></svg></div>
+<h3>Tägliche Mission</h3>
+<p>10 Wörter am Tag. Mehr braucht es nicht.</p>
+</article>
+<article class="b-klein zeigen" style="grid-area:b2;--mf:var(--amber)">
+<div class="b-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3v6l-5.4 9a2 2 0 0 0 1.7 3h11.4a2 2 0 0 0 1.7-3L14 9V3"/><path d="M8.5 3h7M7.5 15h9"/></svg></div>
+<h3>Wort-Labor</h3>
+<p>Fakt oder Fiktion? Entdecke, woher Wörter kommen.</p>
+</article>
+<article class="b-klein zeigen" style="grid-area:b3;--mf:var(--lila)">
+<div class="b-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L5 13h6l-1 9 8-11h-6z"/></svg></div>
+<h3>Arcade</h3>
+<p>Gegen die Uhr. Für die schnellen zwei Minuten.</p>
+</article>
+<article class="b-klein zeigen" style="grid-area:b4;--mf:var(--violett)">
+<div class="b-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4M5 4h12l-3 4 3 4H5"/></svg></div>
+<h3>Rangpfad</h3>
+<p>Vom Einsteiger zum Wortmeister – mit Belohnung an jedem Meilenstein.</p>
+</article>
+</div>
+</div>
+</section>
 
 <section id="methode">
-<p class="kicker">So funktioniert&#8217;s</p>
-<h2>Lernen, das im Kopf bleibt</h2>
-<p class="sektion-sub">Hinter dem Spiel steckt Lernwissenschaft:
-verteilte Wiederholung, tägliche Gewohnheit und ein Wettbewerb,
-der dich zurückholt.</p>
+<div class="innen">
+<div class="sektion-kopf zeigen">
+<p class="kicker">Die Wissenschaft dahinter</p>
+<h2>Warum das hier wirklich funktioniert.</h2>
+</div>
 <div class="schritte">
-<div class="schritt"><div class="nr">1</div>
-<h3>Wiederholen, wenn es zählt</h3>
-<p>Lexant bringt dir jedes Wort genau dann wieder, wenn du es zu
-vergessen drohst – das Prinzip der verteilten Wiederholung
-(Spaced Repetition).</p></div>
-<div class="schritt"><div class="nr">2</div>
-<h3>Dranbleiben leicht gemacht</h3>
-<p>Deine Streak-Flamme belohnt jeden Tag, an dem du spielst. Ein paar
-Minuten täglich schlagen jede durchgelernte Nacht.</p></div>
-<div class="schritt"><div class="nr">3</div>
-<h3>Wettbewerb als Antrieb</h3>
-<p>Trophäen zeigen dein Können, Münzen schmücken dein Profil. Der
-Vergleich mit anderen macht aus Lernen ein Spiel, das du gewinnen
-willst.</p></div>
+<div class="schritt zeigen">
+<div class="mini">
+<div class="leitner-box" style="width:34px;height:40px">1&nbsp;Tag</div>
+<div class="leitner-box voll" style="width:38px;height:50px">3</div>
+<div class="leitner-box" style="width:42px;height:60px">7</div>
+<div class="leitner-box" style="width:46px;height:70px">21</div>
+</div>
+<h3>Verteilte Wiederholung</h3>
+<p>Jedes Wort kommt genau dann wieder, wenn du es zu vergessen drohst.
+Keine Spielerei, sondern der am besten belegte Lerneffekt der
+Gedächtnisforschung.</p>
+</div>
+<div class="schritt zeigen">
+<div class="mini">
+<div class="woche-tag brennt">M</div>
+<div class="woche-tag brennt">D</div>
+<div class="woche-tag brennt">M</div>
+<div class="woche-tag brennt">D</div>
+<div class="woche-tag brennt heute" style="color:var(--orange)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c1 3-3 4.5-3 8a3 3 0 0 0 6 .5C16.5 13 18 11 17 8c2 1.5 3.5 4 3.5 7A8.5 8.5 0 0 1 12 21a8 8 0 0 1-8-6c0-4 3-5.5 4-8 .8 1.3 1.6 2 2.6 2.6C10.2 7.6 11 5.5 12 3z"/></svg></div>
+<div class="woche-tag">S</div>
+<div class="woche-tag">S</div>
+</div>
+<h3>Tägliche Gewohnheit</h3>
+<p>Deine Streak macht aus Lernen eine Gewohnheit. Ein paar Minuten
+täglich schlagen jede durchgelernte Nacht.</p>
+</div>
+<div class="schritt zeigen">
+<div class="mini" style="gap:10px">
+<div class="kurve-balken" style="height:26px"></div>
+<div class="kurve-balken" style="height:38px"></div>
+<div class="kurve-balken" style="height:34px"></div>
+<div class="kurve-balken hoch" style="height:56px"></div>
+<span style="color:var(--amber);width:26px;margin-left:4px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 5H5a3 3 0 0 0 3 5M16 5h3a3 3 0 0 1-3 5"/><path d="M12 13v4M8 21h8M10 17h4"/></svg></span>
+</div>
+<h3>Echter Wettbewerb</h3>
+<p>Trophäen zeigen Können, Münzen sind nur Schmuck. Der Vergleich mit
+anderen holt dich zurück, wenn die Motivation nachlässt.</p>
+</div>
+</div>
 </div>
 </section>
 
 <section id="faq">
+<div class="innen">
+<div class="sektion-kopf zeigen">
 <p class="kicker">FAQ</p>
 <h2>Häufige Fragen</h2>
-<div style="max-width:720px">
+</div>
+<div class="faq-liste zeigen">
 <details><summary>Kostet Lexant etwas?</summary><p class="faq-text">Nein. Lexant ist kostenlos. Münzen verdienst du dir durchs Spielen – es gibt keine Käufe in der App.</p></details>
 <details><summary>Welche Daten speichert Lexant?</summary><p class="faq-text">So wenig wie möglich. Du spielst mit einem anonymen Konto, eine E-Mail-Adresse ist nur für die freiwillige Konto-Sicherung nötig. Alle Details stehen in der <a href="datenschutz.html">Datenschutzerklärung</a>.</p></details>
 <details><summary>Für wen ist Lexant?</summary><p class="faq-text">Für alle, die präziser sprechen und schreiben wollen – ob für Schule, Studium, Beruf oder einfach aus Freude an Sprache.</p></details>
 <details><summary>Wann kann ich Lexant laden?</summary><p class="faq-text">Lexant ist aktuell in der geschlossenen Beta für iOS. Der App-Store-Start wird hier auf der Seite angekündigt.</p></details>
 <details><summary>Kommt Lexant auch für Android?</summary><p class="faq-text">Ja, das ist geplant – iOS kommt zuerst, Android folgt nach dem Start.</p></details>
 </div>
+</div>
 </section>
 
 <section id="beta">
-<div class="beta-karte">
-<p class="kicker" style="color:#7CF0C9">Geschlossene Beta</p>
-<h2>Du willst früher ran?</h2>
-<p>Lexant ist aktuell in der geschlossenen Beta. Schreib uns eine
-kurze Mail und wir melden uns, sobald ein Testplatz frei ist.</p>
-<a class="cta cta-voll" href="mailto:support@lexant.de?subject=Beta-Test%20Lexant">Beta-Platz anfragen</a>
+<div class="innen">
+<div class="finale zeigen">
+<p class="kicker">Geschlossene Beta</p>
+<h2>Werde einer der Ersten.</h2>
+<p>Lexant startet zuerst als geschlossene Beta für iOS.
+Schreib uns – wir melden uns, sobald ein Testplatz frei ist.</p>
+<a class="cta cta-voll" href="mailto:support@lexant.de?subject=Beta-Test%20Lexant">Beta-Platz sichern</a>
+<!-- TestFlight: sobald der Link existiert, hier als zweiter CTA einsetzen -->
+</div>
 </div>
 </section>
 </main>
 
 <footer>
+<div class="innen">
+<div class="fuss-oben">
+<span class="fuss-marke">Lexant<b style="color:var(--akzent)">.</b></span>
+<span class="fuss-claim">Die Wortschatz-App für Deutsch.</span>
+</div>
+<div class="fuss-unten">
 <span>&copy; 2026 Lexant</span>
+<a href="rechtliches.html">Rechtliches</a>
 <a href="impressum.html">Impressum</a>
 <a href="datenschutz.html">Datenschutz</a>
 <a href="nutzungsbedingungen.html">Nutzungsbedingungen</a>
 <a href="mailto:support@lexant.de">support@lexant.de</a>
+</div>
+</div>
 </footer>
+
+<script>document.documentElement.classList.add('js');
+
+// --- Sticky-Nav: nach 60px Scroll festen Hintergrund einblenden ---
+var leiste = document.querySelector('nav');
+function navZustand() {
+  leiste.classList.toggle('fest', window.scrollY > 60);
+}
+navZustand();
+addEventListener('scroll', navZustand, { passive: true });
+
+// --- Scroll-Reveal (einmalig pro Element) ---
+var beobachter = new IntersectionObserver(function (eintraege) {
+  eintraege.forEach(function (e) {
+    if (e.isIntersecting) { e.target.classList.add('da'); beobachter.unobserve(e.target); }
+  });
+}, { threshold: 0.12 });
+document.querySelectorAll('.zeigen').forEach(function (el) { beobachter.observe(el); });
+
+// --- Mini-Quiz: echte Fragen aus der App (assets/vocab*.csv) ---
+// r = Index der richtigen Antwort.
+var fragen = [
+  { wort: 'redundant', art: 'ADJEKTIV', r: 2, antworten: [
+      'Wichtig, essenziell und für das Verständnis unerlässlich.',
+      'Einzigartig und daher von großer Bedeutung.',
+      'Überflüssig, unnötig, da bereits ausreichend vorhanden.',
+      'Schwierig zu verstehen, erfordert zusätzliche Erläuterung.'],
+    beispiel: 'Viele der gesammelten Daten erwiesen sich als redundant und wurden aussortiert.' },
+  { wort: 'subtil', art: 'ADJEKTIV', r: 0, antworten: [
+      'Fein und schwer wahrnehmbar – nicht direkt offensichtlich.',
+      'Offensichtlich und sofort unmissverständlich erkennbar.',
+      'Laut und auffällig – kaum zu übersehen.',
+      'Kompliziert und schwer zu durchschauen.'],
+    beispiel: 'Die subtilen Anzeichen von Stress wurden oft übersehen.' },
+  { wort: 'Akribie', art: 'SUBSTANTIV', r: 3, antworten: [
+      'Das schnelle Erledigen von Aufgaben, oft auf Kosten der Genauigkeit.',
+      'Die Fähigkeit, spontan kreative Lösungen zu entwickeln.',
+      'Das Delegieren anspruchsvoller Aufgaben, um Zeit zu sparen.',
+      'Genaue, sorgfältige Arbeitsweise mit höchster Präzision.'],
+    beispiel: 'Für die Forschungsarbeit war eine hohe Akribie bei der Datenerfassung unerlässlich.' },
+  { wort: 'Ambivalenz', art: 'SUBSTANTIV', r: 1, antworten: [
+      'Die Fähigkeit, schnell zwischen Stimmungen zu wechseln.',
+      'Das gleichzeitige Bestehen gegensätzlicher Gefühle.',
+      'Ein Zustand tiefer innerer Ruhe und Ausgeglichenheit.',
+      'Die Schwierigkeit, sich zwischen vielen Optionen zu entscheiden.'],
+    beispiel: 'Er empfand eine starke Ambivalenz zwischen dem Wunsch zu bleiben und dem Drang zu gehen.' },
+  { wort: 'Liquidität', art: 'SUBSTANTIV', r: 2, antworten: [
+      'Der Prozess der Auflösung eines Unternehmens.',
+      'Die Gewinnspanne, die ein Produkt abwirft.',
+      'Die Fähigkeit, jederzeit zahlungsfähig zu sein.',
+      'Eine staatliche Förderung zur Stabilisierung der Wirtschaft.'],
+    beispiel: 'Die Bank prüft die Liquidität von Antragstellern genau, bevor sie Kredite vergibt.' }
+];
+
+var qNr = 0, qPunkte = 0;
+var qMeta = document.getElementById('quiz-schritt');
+var qPunkteEl = document.getElementById('quiz-punkte');
+var qBalken = document.getElementById('quiz-balken');
+var qWort = document.getElementById('quiz-wort');
+var qArt = document.getElementById('quiz-art');
+var qAntworten = document.getElementById('quiz-antworten');
+var qBeispiel = document.getElementById('quiz-beispiel');
+var qWeiter = document.getElementById('quiz-weiter');
+var qLauf = document.getElementById('quiz-lauf');
+var qEnde = document.getElementById('quiz-ende');
+
+function zeigeFrage() {
+  var f = fragen[qNr];
+  qMeta.textContent = 'Frage ' + (qNr + 1) + ' von ' + fragen.length;
+  qPunkteEl.textContent = qPunkte + (qPunkte === 1 ? ' Punkt' : ' Punkte');
+  qBalken.style.width = (qNr / fragen.length * 100) + '%';
+  qWort.textContent = f.wort;
+  qArt.textContent = f.art;
+  qBeispiel.style.display = 'none';
+  qWeiter.style.display = 'none';
+  qAntworten.innerHTML = '';
+  f.antworten.forEach(function (text, i) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = text;
+    b.addEventListener('click', function () { antworte(i, b); });
+    qAntworten.appendChild(b);
+  });
+}
+
+function antworte(i, knopf) {
+  var f = fragen[qNr];
+  var knoepfe = qAntworten.querySelectorAll('button');
+  knoepfe.forEach(function (b, j) {
+    b.disabled = true;
+    if (j === f.r) { b.classList.add('richtig'); }
+    else if (j === i) { b.classList.add('falsch'); }
+    else { b.classList.add('blass'); }
+  });
+  if (i === f.r) { qPunkte++; }
+  qPunkteEl.textContent = qPunkte + (qPunkte === 1 ? ' Punkt' : ' Punkte');
+  qBalken.style.width = ((qNr + 1) / fragen.length * 100) + '%';
+  qBeispiel.innerHTML = '<b>So klingt es im Satz:</b> ' + f.beispiel;
+  qBeispiel.style.display = 'block';
+  qWeiter.textContent = qNr + 1 < fragen.length ? 'Weiter' : 'Ergebnis ansehen';
+  qWeiter.style.display = 'inline-block';
+}
+
+qWeiter.addEventListener('click', function () {
+  qNr++;
+  if (qNr < fragen.length) { zeigeFrage(); return; }
+  qLauf.style.display = 'none';
+  qEnde.style.display = 'block';
+  document.getElementById('quiz-stand').textContent = qPunkte + '/' + fragen.length;
+  var urteil = 'Solide Basis – der Rest kommt mit Training.';
+  if (qPunkte >= 5) { urteil = 'Makellos. Die Liga der Denker wartet auf dich.'; }
+  else if (qPunkte >= 3) { urteil = 'Stark. Mit etwas Training wirst du gefährlich.'; }
+  document.getElementById('quiz-urteil').textContent = urteil;
+});
+
+document.getElementById('quiz-nochmal').addEventListener('click', function () {
+  qNr = 0; qPunkte = 0;
+  qEnde.style.display = 'none';
+  qLauf.style.display = 'block';
+  zeigeFrage();
+});
+
+zeigeFrage();
+</script>
 </body>
 </html>
